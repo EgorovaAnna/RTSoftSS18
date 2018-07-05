@@ -3,14 +3,19 @@
 #include "opencv2/videoio.hpp"
 #include <opencv2/highgui.hpp>
 #include <opencv2/bgsegm.hpp>
+#include <opencv2/core/types.hpp>
+#include <opencv2/xphoto/white_balance.hpp>
 #include <vector>
 
 using namespace cv;
 
-int isField(Mat &littleframe)
+int isField(Mat littleframe)
 {
 	//строим гистограмму и смотрим на пики
-	int histSize[] = {10, 10, 10}, sum = 0;
+	//cvtColor(littleframe, littleframe, COLOR_RGB2BGR);
+	
+	//balanceWhite(littleframe, littleframe, WHITE_BALANCE_SIMPLE);
+	int histSize[] = {8, 8, 8}, sum = 0;
 	int channels[] = {0, 1, 2};
 	float arang[] = {0, 256};
 	float brang[] = {0, 256};
@@ -19,7 +24,10 @@ int isField(Mat &littleframe)
 	const float* ranges[] = {arang, brang, crang};
 	calcHist(&littleframe, 1, channels, Mat(), hist, 3, &histSize[0], ranges);
 	for (int i = 3; i < 10; i++)
-		sum += hist.at<int>(0, i, 0) + hist.at<int>(0, i, 1) + hist.at<int>(1, i, 0) + hist.at<int>(1, i, 1);
+		sum += hist.at<int>(0, i, 0) + hist.at<int>(0, i, 1) + hist.at<int>(1, i, 0) + hist.at<int>(1, i, 1) + hist.at<int>(0, i, 2) + hist.at<int>(2, i, 0) + hist.at<int>(2, i, 1) + hist.at<int>(1, i, 2);
+	namedWindow("hist");
+	Range range[3] = {Range(0, 10), Range(0, 10), Range(0, 1);
+	imshow("hist", hist(range));
 	if (sum*100/littleframe.total() > 70)
 		return 1;
 	if (sum*100/littleframe.total() > 50)
@@ -29,9 +37,10 @@ int isField(Mat &littleframe)
 
 int main()
 {
-	Mat frame, frame2, grayframe, littleframes[10][10], dh, dw;
-	int keyboard = 0, isfield[10][10];
+	Mat frame, frame2, grayframe, littleframes[10][10];
+	int keyboard = 0, isfield[10][10], dh, dw;
 	Ptr<LineSegmentDetector> ls = createLineSegmentDetector(LSD_REFINE_STD);
+	Ptr<xphoto::WhiteBalancer> wb = xphoto::createSimpleWB();
 	std::vector<Vec4f> lines_std;
 	namedWindow("Frame");
 	VideoCapture capture("videoplayback.mp4");
@@ -51,10 +60,14 @@ int main()
 		Canny(grayframe, grayframe, 50, 150, 3);
 		ls -> detect(grayframe, lines_std);
 		//ls -> drawSegments(frame, lines_std);
+		wb -> balanceWhite(frame, frame);
 		for (int i = 0; i < 10; i++)
 		{
 			for (int j = 0; j < 10; j++)
-				std::cout << isfield[i][j] = isField(frame(Range((int)i*dw, (int)(i + 1)*dw), Range(j*dh, (j + 1)*dh))) << " ";
+			{
+				isfield[i][j] = isField(frame(Range((int)i*dw, (int)(i + 1)*dw), Range(j*dh, (j + 1)*dh)));
+				std::cout << isfield[i][j] << " ";
+			}
 			std::cout << std::endl;
 		}
 		std::cout << std::endl;
