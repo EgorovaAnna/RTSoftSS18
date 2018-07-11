@@ -127,11 +127,6 @@ int main()
 		{
 			if ((isfield[(int)line[1]/dh][(int)line[0]/dw] >= 0 || isfield[(int)line[3]/dh][(int)line[2]/dw] >= 0))
 				lines.push_back(line);
-			else
-			{
-				std::cout << (int)line[0]/dw << " " << (int)line[1]/dh << " " << (int)line[2]/dw << " " << (int)line[3]/dh << " " << std::endl;
-				std::cout << isfield[(int)line[1]/dh][(int)line[0]/dw] << " " << isfield[(int)line[3]/dh][(int)line[2]/dw] << " " << std::endl;
-			}
 		}
 		ls -> drawSegments(frame2, lines); //lines on green field
 		ls -> drawSegments(frame1, lines_std); // all lines
