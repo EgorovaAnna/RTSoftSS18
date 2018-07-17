@@ -13,8 +13,10 @@ public:
 	SearchLineOnField(int nx, int ny, int fF = 20, int fT = 110, SearchLines *nsl = new SearchLines(), ApproxLines *nal = new ApproxLines());
 	//SearchLineOnField(int nx, int ny, int fF = 20, int fT = 110);
 	std::vector<Vec4f> search(Mat frame);
+	std::vector<Vec4f> searchBoundingLines(Mat frame);
 private:
 	int isField(Mat littleframe);
 	void replaceMistakes(bool lineRedact = false);
 	bool onField(Vec4f line);
+	std::vector<Vec4f> approxField(int dh, int dw);
 };
