@@ -15,14 +15,6 @@ SearchLineOnField::SearchLineOnField(int nx, int ny, int fF, int fT, SearchLines
 		fieldTo = fT;
 	}
 }
-/*SearchLineOnField::SearchLineOnField(int nx, int ny, int fF, int fT)
-{
-	if (nx > 1 && ny > 1)
-		for (int i = 0; i < nx; i++)
-			MaskField[i] = new int[ny];
-	fieldFrom = fF;
-	fieldTo = fT;
-}*/
 std::vector<Vec4f> SearchLineOnField::search(Mat frame)
 {
 	std::vector<Vec4f> lines, linesOnField;
@@ -42,6 +34,17 @@ std::vector<Vec4f> SearchLineOnField::search(Mat frame)
 	lines = sl -> lines(frame);
 	for (auto& line : lines)
 		if (onField(line))
+			linesOnField.push_back(line);
+	return linesOnField;
+}
+std::vector<Vec4f> SearchLineOnField::search(Mat frame, bool little)
+{
+	std::vector<Vec4f> alllines, linesOnField;
+	if (frame.cols < 10)
+		linesOnField.push_back(Vec4f());
+	alllines = sl -> lines(frame, little);
+	for (auto& line : alllines)
+		if (pow(pow(line[0] - line[2], 2) + pow(line[1] - line[3], 2), 0.5) >= (frame.cols + frame.rows)/4)
 			linesOnField.push_back(line);
 	return linesOnField;
 }
@@ -167,8 +170,21 @@ std::vector<Vec4f> SearchLineOnField::approxField()
 		fieldlines.push_back(Vec4f(x11, y11, x3, y3));
 	if (x3 != x2)
 		fieldlines.push_back(Vec4f(x3, y3, x2, y2));
+	
 	x11 = x2;
 	y11 = y2;
+	if (x11 == 0)
+	{		
+		for (int i = x - 1; i > -1; i--)
+		{
+			if (MaskField[i][0] == 1)
+			{
+				fieldlines.push_back(Vec4f(x11, y11, 0, i*dh));
+				y11 = i*dh;
+				break;
+			}
+		}
+	}
 	y2 = x*dh;
 	for (int i = y - 1; i > x12/dw; i--)
 	{
@@ -201,18 +217,6 @@ std::vector<Vec4f> SearchLineOnField::approxField()
 		fieldlines.push_back(Vec4f(x3, y3, x2, y2));
 	x12 = x2;
 	y12 = y2;
-	if (x11 == 0)
-	{		
-		for (int i = x - 1; i > -1; i--)
-		{
-			if (MaskField[i][0] == 1)
-			{
-				fieldlines.push_back(Vec4f(x11, y11, 0, i*dh));
-				y11 = i*dh;
-				break;
-			}
-		}
-	}
 	if (x12/dw == y)
 	{
 		for (int i = x - 1; i > -1; i--)

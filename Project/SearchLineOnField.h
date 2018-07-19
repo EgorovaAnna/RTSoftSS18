@@ -12,7 +12,7 @@ class SearchLineOnField
 	ApproxLines *al;
 public:
 	SearchLineOnField(int nx, int ny, int fF = 20, int fT = 110, SearchLines *nsl = new SearchLines(), ApproxLines *nal = new ApproxLines());
-	//SearchLineOnField(int nx, int ny, int fF = 20, int fT = 110);
+	std::vector<Vec4f> search(Mat frame, bool little);
 	std::vector<Vec4f> search(Mat frame);
 	std::vector<Vec4f> searchBoundingLines(Mat frame, bool approxmask = false);
 	void approxMask(std::vector<Vec4f> boundlines, bool higher = false);

@@ -14,4 +14,11 @@ std::vector<Vec4f> SearchLines::lines(Mat frame)
 	ls -> detect(grayframe, allLines);
 	return allLines;
 }
+std::vector<Vec4f> SearchLines::lines(Mat frame, bool little)
+{
+	Mat grayframe;
+	cvtColor(frame, grayframe, COLOR_BGR2GRAY );
+	ls -> detect(grayframe, allLines);
+	return allLines;
+}
 

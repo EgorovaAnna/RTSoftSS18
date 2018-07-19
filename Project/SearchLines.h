@@ -20,6 +20,7 @@ class SearchLines
 public:
 	SearchLines();
 	std::vector<Vec4f> lines(Mat frame);
+	std::vector<Vec4f> lines(Mat frame, bool little);
 };
 
 #endif
